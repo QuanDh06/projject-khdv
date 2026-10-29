@@ -1,0 +1,3 @@
+* text=auto
+
+docker/php-fpm/start-container text eol=lf

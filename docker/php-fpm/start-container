@@ -1,0 +1,36 @@
+#!/bin/bash
+
+echo "➜ Ignore Permission Changes"
+git config core.fileMode false
+
+echo "➜ Set Correct Permissions"
+chmod -R 777 storage
+
+if [[ ! -f config.php ]]; then
+    echo "➜ Create config.php from config-sample.php"
+    cp config-sample.php config.php
+    sed -i "s|const BASE_URL = 'http://url-to-your-easyappointments-directory';|const BASE_URL = 'http://localhost';|g" config.php
+    sed -i "s|const LANGUAGE = 'english';|const LANGUAGE = 'vietnamese';|g" config.php
+    sed -i "s|const DB_HOST = 'localhost';|const DB_HOST = 'mysql';|g" config.php
+    sed -i "s|const DB_NAME = 'easyappointments';|const DB_NAME = 'easyappointments';|g" config.php
+    sed -i "s|const DB_USERNAME = 'user';|const DB_USERNAME = 'user';|g" config.php
+    sed -i "s|const DB_PASSWORD = 'password';|const DB_PASSWORD = 'password';|g" config.php
+fi
+
+echo "➜ Install Composer Dependencies"
+if [[ ! -f vendor/autoload.php ]]; then
+    rm -rf /tmp/build && mkdir -p /tmp/build
+    cp composer.json composer.lock /tmp/build/
+    COMPOSER_PROCESS_TIMEOUT=0 composer install --working-dir=/tmp/build --no-interaction --no-progress
+    rm -rf vendor && cp -r /tmp/build/vendor vendor
+    composer dump-autoload --no-interaction --no-scripts
+fi
+
+echo "➜ Install NPM Dependencies"
+[[ -d node_modules ]] || npm install
+
+echo "➜ Build Project Assets"
+[[ -d assets/vendor ]] || npx gulp compile
+
+echo "➜ Listen To Incoming Requests"
+php-fpm
