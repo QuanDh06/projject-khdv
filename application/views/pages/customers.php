@@ -7,6 +7,7 @@
         <div id="filter-customers" class="filter-records col col-12 mb-4">
             <?php if (
                 can('add', PRIV_CUSTOMERS) &&
+                vars('role_slug') !== DB_SLUG_PROVIDER &&
                 (!setting('limit_customer_access') || vars('role_slug') === DB_SLUG_ADMIN)
             ): ?>
                 <button id="add-customer" class="btn btn-primary add-record-btn mb-4">

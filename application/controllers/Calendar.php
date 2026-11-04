@@ -216,7 +216,7 @@ class Calendar extends EA_Controller
 
         $customers = $this->customers_model->get(null, 50, null, 'update_datetime DESC');
 
-        if (setting('limit_customer_access') && $role_slug === DB_SLUG_PROVIDER) {
+        if ($role_slug === DB_SLUG_PROVIDER) {
             // Only include the customers that the provider is supposed to see (they had past booking together)
             $CI = $this;
 
@@ -363,18 +363,22 @@ class Calendar extends EA_Controller
                 $this->customers_model->optional($customer, $this->optional_customer_fields);
 
                 // Reuse existing customers by email (same behavior as public booking).
+                $reused_existing_customer = false;
+
                 if (empty($customer['id']) && $this->customers_model->exists($customer)) {
                     $customer['id'] = $this->customers_model->find_record_id($customer);
+                    $reused_existing_customer = true;
                 }
 
                 if (
                     !empty($customer['id']) &&
+                    !$reused_existing_customer &&
                     !$this->permissions->has_customer_access((int) session('user_id'), (int) $customer['id'])
                 ) {
                     abort(403, 'Forbidden');
                 }
 
-                $is_new_customer = empty($customer['id']);
+                $is_new_customer = empty($customer['id']) || $reused_existing_customer;
 
                 $customer['id'] = $this->customers_model->save($customer);
             }

@@ -249,6 +249,10 @@ class Roles_model extends EA_Model
             }
         }
 
+        if ($slug === DB_SLUG_PROVIDER && isset($permissions[PRIV_CUSTOMERS])) {
+            $permissions[PRIV_CUSTOMERS]['delete'] = false;
+        }
+
         return $permissions;
     }
 

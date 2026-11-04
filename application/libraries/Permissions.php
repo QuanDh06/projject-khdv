@@ -58,18 +58,18 @@ class Permissions
 
         $role_slug = $this->CI->roles_model->value($role_id, 'slug');
 
-        $limit_customer_access = setting('limit_customer_access');
-
-        if ($role_slug === DB_SLUG_ADMIN || !$limit_customer_access) {
-            return true;
-        }
-
         if ($role_slug === DB_SLUG_PROVIDER) {
             return $this->CI->appointments_model
                 ->query()
                 ->where(['id_users_provider' => $user_id, 'id_users_customer' => $customer_id])
                 ->get()
                 ->num_rows() > 0;
+        }
+
+        $limit_customer_access = setting('limit_customer_access');
+
+        if ($role_slug === DB_SLUG_ADMIN || !$limit_customer_access) {
+            return true;
         }
 
         if ($role_slug === DB_SLUG_SECRETARY) {

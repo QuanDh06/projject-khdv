@@ -497,7 +497,7 @@ class Migration_Specific_calendar_sync extends EA_Migration
             'slug' => 'provider',
             'is_admin' => false,
             'appointments' => 15,
-            'customers' => 15,
+            'customers' => 7,
             'services' => 0,
             'users' => 0,
             'system_settings' => 0,

@@ -40,6 +40,9 @@ foreach ($settings_updates as $k => $v) {
     $stmt_setting->execute([':val' => $v, ':name' => $k]);
 }
 
+// Không cho phép Provider xóa khách hàng (chỉ có quyền Xem + Thêm + Sửa = 1 + 2 + 4 = 7)
+$pdo->exec("UPDATE ea_roles SET customers = 7, update_datetime = NOW() WHERE slug = 'provider'");
+
 // 2. Update 1 Admin (id = 1)
 $pdo->prepare("
     UPDATE ea_users
